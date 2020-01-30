@@ -1,0 +1,28 @@
+{
+  "exclude": ["node_modules", "**/*.css", "**/*.scss"],
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,
+    "baseUrl": "../",
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["dom", "es2016"],
+    "module": "commonjs",
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "target": "es5",
+    "typeRoots": ["../"],
+    "types": [],
+    "paths": {
+      "@kunukn/react-collapse": ["types/index.d.ts"],
+      "~/*": ["*"],
+      "src/*": ["./src/*"],
+      "components/*": ["./components/*"]
+    }
+  }
+}
