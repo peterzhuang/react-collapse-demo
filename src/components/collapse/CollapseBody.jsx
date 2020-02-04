@@ -5,7 +5,7 @@
  */
 
 import "./collapse.css";
-import React, { useRef, useCallback, useReducer } from "react";
+import React, { useEffect, useRef, useCallback, useReducer } from "react";
 import debugLog from "./debugLog";
 
 let COLLAPSED = "collapsed";
@@ -14,7 +14,7 @@ let EXPANDING = "expanding";
 let EXPANDED = "expanded";
 
 let defaultClassName = "collapse-css-transition";
-let defaultCollapseHeight = "58px";
+let defaultCollapseHeight = "60px";
 
 function nextFrame(callback) {
   requestAnimationFrame(function() {
@@ -28,6 +28,7 @@ function CollapseBody({
   isOpen,
   collapseHeight = defaultCollapseHeight,
   noAnim,
+  handleInternalClick,
   ...rest
 }) {
   let getCollapsedVisibility = () => (collapseHeight === "0px" ? "hidden" : "");
@@ -37,12 +38,92 @@ function CollapseBody({
   let elementRef = useRef();
 
   let state = useRef({
+    shouldExpand: true,
     collapse: isOpen ? EXPANDED : COLLAPSED,
     style: {
       height: isOpen ? "" : collapseHeight,
       visibility: isOpen ? "" : getCollapsedVisibility()
     }
   }).current;
+
+  useEffect(() => {
+    shouldDataExpand();
+  }, []);
+
+  function getClassName() {
+    const { collapse } = state;
+
+    const expandedClass =
+      collapse === EXPANDED ? "react-expand-collapse--expanded" : "";
+
+    const classes = [
+      "react-expand-collapse__content",
+      "collapse-css-transition",
+      expandedClass
+    ].join(" ");
+
+    return classes;
+  }
+
+  function shouldDataExpand() {
+    const { collapse } = state;
+
+    const contentRect = elementRef.current.getBoundingClientRect();
+    const contentBodyRect = elementRef.current
+      .querySelector(".react-expand-collapse__body")
+      .getBoundingClientRect();
+
+    console.log("contentRect height", contentRect.height);
+    console.log("contentBodyRect height", contentBodyRect.height);
+    console.log("expanded", collapse);
+    if (
+      contentRect.height > contentBodyRect.height &&
+      !(collapse !== EXPANDED)
+    ) {
+      state.shouldExpand = false;
+      forceUpdate();
+    }
+  }
+
+  function getButton() {
+    const { collapse, shouldExpand } = state;
+
+    if (shouldExpand) {
+      const buttonText = getButtonText();
+
+      return (
+        <span
+          className="react-expand-collapse__button"
+          onClick={handleInternalClick}
+          aria-label={buttonText}
+          aria-expanded={collapse === EXPANDED}
+          role="button"
+        >
+          {buttonText}
+        </span>
+      );
+    }
+
+    return "";
+  }
+
+  function getButtonText() {
+    const { collapse } = state;
+
+    // const { expandText, collapseText, ellipsis, ellipsisText } = this.props;
+    const collapseText = "Collapse";
+    const expandText = "Expand";
+    const ellipsis = true;
+    const ellipsisText = "...";
+
+    let text = collapse === EXPANDED ? collapseText : expandText;
+
+    if (ellipsis) {
+      text = !(collapse === EXPANDED) ? `${`${ellipsisText} ${text}`}` : text;
+    }
+
+    return text;
+  }
 
   function setCollapsed() {
     if (!elementRef.current) return;
@@ -184,10 +265,12 @@ function CollapseBody({
       ref={callbackRef}
       style={computedStyle}
       onTransitionEnd={onTransitionEnd}
-      className={defaultClassName}
+      className={getClassName()}
       {...rest}
     >
-      {children}
+      <div className="react-expand-collapse__body">{children}</div>
+      {/* {children} */}
+      {getButton()}
     </div>
   );
 }

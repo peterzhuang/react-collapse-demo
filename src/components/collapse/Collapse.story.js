@@ -36,6 +36,10 @@ const Toggle = styled.button`
   color: purple;
 `;
 
+const handleClick = (state, setState) => {
+  setState({ isOpen: !state.isOpen });
+};
+
 export default function CollapseStory() {
   storiesOf("Collapses", module)
     .add("default", () => (
@@ -45,7 +49,7 @@ export default function CollapseStory() {
             <Toggle onClick={() => setState({ isOpen: !state.isOpen })}>
               toggle
             </Toggle>
-            <CollapseBody isOpen={state.isOpen} excludeStateCSS>
+            <CollapseBody isOpen={state.isOpen} handleInternalClick={() => handleClick(state, setState)} excludeStateCSS>
               <Text>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
