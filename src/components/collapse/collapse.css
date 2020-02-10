@@ -5,10 +5,15 @@
 .react-expand-collapse__content {
   position: relative;
   overflow: hidden;
+  font-size: 15px;
 }
 
 .react-expand-collapse__body {
   display: inline;
+}
+
+.react-expand-collapse__body > p {
+  padding: 0;
 }
 
 /* expand-collapse button */

@@ -16,7 +16,7 @@ const Text = styled.p`
 `;
 
 const Container = styled.div`
-  max-width: 500px;
+  /* max-width: 500px; */
   padding: 1rem;
 `;
 

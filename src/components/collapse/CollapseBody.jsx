@@ -15,6 +15,7 @@ let EXPANDED = "expanded";
 
 let defaultClassName = "collapse-css-transition";
 let defaultCollapseHeight = "60px";
+let defaultCollapseLineNumber = 2;
 
 function nextFrame(callback) {
   requestAnimationFrame(function() {
@@ -26,11 +27,14 @@ function CollapseBody({
   children,
   style,
   isOpen,
-  collapseHeight = defaultCollapseHeight,
+  collapseLineNumber = defaultCollapseLineNumber,
+  // collapseHeight = defaultCollapseHeight,
   noAnim,
   handleInternalClick,
   ...rest
 }) {
+  let collapseHeight = `${collapseLineNumber * 24}px`;
+
   let getCollapsedVisibility = () => (collapseHeight === "0px" ? "hidden" : "");
 
   let [__, forceUpdate] = useReducer(_ => _ + 1, 0);
@@ -47,6 +51,8 @@ function CollapseBody({
   }).current;
 
   useEffect(() => {
+    // shouldDataExpand();
+    window.addEventListener("resize", shouldDataExpand);
     shouldDataExpand();
   }, []);
 
@@ -77,17 +83,22 @@ function CollapseBody({
     console.log("contentBodyRect height", contentBodyRect.height);
     console.log("expanded", collapse);
     if (
-      contentRect.height > contentBodyRect.height &&
-      !(collapse !== EXPANDED)
+      contentRect.height >= contentBodyRect.height &&
+      !(collapse !== COLLAPSED)
     ) {
+      console.log("setting shouldExpand FALSE");
       state.shouldExpand = false;
+      forceUpdate();
+    } else {
+      console.log("setting shouldExpand true");
+      state.shouldExpand = true;
       forceUpdate();
     }
   }
 
   function getButton() {
     const { collapse, shouldExpand } = state;
-
+    console.log("shouldExpand", shouldExpand);
     if (shouldExpand) {
       const buttonText = getButtonText();
 
@@ -116,10 +127,19 @@ function CollapseBody({
     const ellipsis = true;
     const ellipsisText = "...";
 
-    let text = collapse === EXPANDED ? collapseText : expandText;
+    // let text = collapse === EXPANDED ? collapseText : expandText;
+    let text = "";
+    if (collapse === EXPANDED) {
+      text = collapseText;
+    } else if (collapse === COLLAPSED) {
+      text = expandText;
+    }
 
     if (ellipsis) {
-      text = !(collapse === EXPANDED) ? `${`${ellipsisText} ${text}`}` : text;
+      // text = !(collapse === EXPANDED) ? `${`${ellipsisText} ${text}`}` : text;
+      if (collapse === COLLAPSED) {
+        text = `${`${ellipsisText} ${text}`}`;
+      }
     }
 
     return text;
@@ -245,6 +265,7 @@ function CollapseBody({
 
   let computedStyle = {
     overflow: "hidden",
+    lineHeight: "24px",
     ...style,
     ...state.style
   };
