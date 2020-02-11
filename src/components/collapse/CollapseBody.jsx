@@ -89,6 +89,13 @@ function CollapseBody({
       console.log("setting shouldExpand FALSE");
       state.shouldExpand = false;
       forceUpdate();
+    } else if (
+      contentRect.height >= contentBodyRect.height &&
+      !(collapse !== EXPANDED)
+    ) {
+      state.collapse = EXPANDED;
+      state.shouldExpand = false;
+      forceUpdate();
     } else {
       console.log("setting shouldExpand true");
       state.shouldExpand = true;
